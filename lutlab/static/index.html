@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUT Lab</title>
+<link rel="icon" href="data:,">
+<style>
+@font-face{font-family:Pretendard;src:url('/fonts/Pretendard-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Pretendard;src:url('/fonts/Pretendard-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+:root{color-scheme:dark;--bg:#0E0E0F;--raise:#19191B;--line:#303033;--text:#F2F2EF;--muted:#9B9B9E;--accent:#FF5A36}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px Pretendard,sans-serif;height:100dvh;min-width:840px;display:flex;flex-direction:column}
+button,input,select{font:inherit;color:inherit}button,select,input[type=search],input[type=text]{background:var(--raise);border:1px solid var(--line);border-radius:5px;padding:9px 11px}button{cursor:pointer}button:hover{border-color:var(--muted)}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline-offset:3px}.preview-tools button[aria-pressed=true],.tabs button[aria-pressed=true],.tat[aria-pressed=true],.zone h3 button[aria-pressed=true]{background:var(--text);color:var(--bg);border-color:var(--text)}input{min-width:0}h1,h2,p{margin:0}h2{font-size:13px;font-weight:600}.muted{color:var(--muted)}.tiny{font-size:11px}.mono{font-variant-numeric:tabular-nums}header{height:72px;flex-shrink:0;border-bottom:1px solid var(--line);padding:0 26px;display:flex;align-items:center;gap:18px}h1{font-size:22px;letter-spacing:-.7px}header .mark{width:24px;height:24px;border:1px solid var(--text);border-radius:50%;background:linear-gradient(90deg,var(--text) 50%,transparent 50%)}.header-rule{width:1px;height:20px;background:var(--line)}header .local{margin-left:auto;font-size:11px;letter-spacing:1.5px}.local:before{content:' ';display:inline-block;border:1px solid var(--muted);width:6px;height:6px;border-radius:50%;margin-right:8px}
+main{flex:1;min-height:0;display:grid;grid-template-columns:auto auto minmax(0,1fr) 390px}.photos{width:164px;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;padding:22px 14px 14px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}.section-head .count{color:var(--muted);font-size:11px}.photo-list{overflow:auto;flex:1;min-height:0;margin:0 -4px;padding:0 4px}.photo{width:100%;padding:5px;margin-bottom:12px;text-align:left;background:transparent;border:1px solid transparent;border-radius:5px}.photo[aria-pressed=true]{background:var(--raise);border-color:var(--text);color:var(--text)}.photo img{width:100%;height:102px;object-fit:cover;border-radius:2px;display:block;background:var(--raise)}.photo span{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:9px 3px 3px;color:var(--muted)}.upload{border-style:dashed;width:100%;font-size:12px;margin-top:12px;padding:15px 4px}.drop-hint{font-size:10px;text-align:center;color:var(--muted);line-height:1.6;margin-top:9px}.photos.dragover{outline:2px dashed var(--text);outline-offset:-5px}
+.preview{display:flex;flex-direction:column;min-width:0;min-height:0;padding:22px 28px 18px}.preview-heading{display:flex;align-items:flex-start;gap:10px}.preview-heading>div{min-width:0}.preview-heading h2{font-size:16px;letter-spacing:-.3px}.preview-heading p{font-size:11px;color:var(--muted);margin-top:7px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.render-time{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap;padding-top:3px}.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;margin:22px 0}.empty{color:var(--muted);text-align:center;line-height:1.8}.frame{position:relative;overflow:hidden;box-shadow:0 15px 50px #0005;background:var(--raise)}.frame[hidden]{display:none}.frame img{display:block;position:absolute;width:100%;height:100%;object-fit:contain}.frame #after{clip-path:inset(0 0 0 var(--split,50%))}.frame[data-mode=original] #after{visibility:hidden}.frame[data-mode=filtered] #after{clip-path:none}.frame:not([data-mode=split]) .split-only{display:none}.divider{position:absolute;left:var(--split,50%);top:0;bottom:0;width:30px;transform:translateX(-50%);border:0;background:transparent;padding:0;touch-action:none;cursor:ew-resize;border-radius:0}.divider:hover{background:transparent}.divider:before{content:'';position:absolute;top:0;bottom:0;left:14px;width:1px;background:#fff9;box-shadow:0 0 3px #0006}.divider:after{content:'‹ ›';position:absolute;top:50%;left:0;width:30px;height:34px;display:grid;place-items:center;background:var(--text);color:var(--bg);border-radius:4px;font-size:16px}.image-label{position:absolute;top:16px;left:16px;background:#0e0e0f99;padding:6px 9px;font-size:10px;letter-spacing:1px;border-radius:3px;pointer-events:none}.image-label.right{left:auto;right:16px}.preview-tools{display:flex;justify-content:center;gap:5px;align-items:center}.preview-tools button{font-size:11px;padding:8px 16px}.preview-foot{display:flex;justify-content:space-between;margin-top:20px;color:var(--muted);font-size:10px;gap:8px}kbd{font:10px Pretendard,sans-serif;border:1px solid var(--line);border-radius:3px;padding:2px 5px;color:var(--muted)}
+.sidebar{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--raise)}.browser{width:286px;border-right:1px solid var(--line);padding:22px 14px 0;min-height:0;display:flex;flex-direction:column}.search{width:100%;background:var(--bg)!important;margin-bottom:8px;padding:10px 12px!important}.filters{display:flex;gap:6px;margin-bottom:12px}.filters select{font-size:11px;padding:7px 5px;width:calc(50% - 22px);background:var(--bg)}.filters button{padding:4px 9px;font-size:16px;background:transparent;color:var(--muted)}.filters button[aria-pressed=true]{color:var(--text)}.lut-list{overflow:auto;min-height:0;flex:1;margin:0 -14px;padding:4px 0 8px}.lut-row{display:flex;align-items:center;min-height:52px;border-left:2px solid transparent;padding:0 12px 0 16px}.lut-row.selected{background:#252527;border-left-color:var(--text)}.lut-pick{min-width:0;flex:1;text-align:left;background:transparent;border:0;padding:9px 2px}.lut-pick:hover{background:#ffffff05}.lut-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.lut-meta{display:flex;gap:7px;margin-top:5px;color:var(--muted);font-size:10px}.badge{color:var(--accent)}.star{background:transparent;border:0;padding:8px;font-size:17px;color:var(--muted)}.star.saved{color:var(--text)}.text-button{border:0;background:transparent;padding:0;color:var(--muted);font-size:11px}.control{display:grid;grid-template-columns:63px 1fr 54px;align-items:center;gap:10px;height:29px;font-size:11px}.control .num{width:100%;text-align:right;color:var(--text);font-size:11px;font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:3px 5px}.control .num:focus{border-color:var(--text);outline:none}.control .num.bad{border-color:var(--accent);color:var(--accent)}input[type=range]{width:100%;height:3px;accent-color:var(--text);cursor:pointer;margin:0}.cube-info{max-height:180px;overflow:auto;flex-shrink:0;padding:12px 20px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}.cube-info summary{cursor:pointer;display:flex;justify-content:space-between}.cube-info pre{max-height:110px;overflow:auto;font-size:10px;white-space:pre-wrap}.ignored-details{margin-top:9px;line-height:1.5;color:var(--accent)}.actions{border-top:1px solid var(--line);padding:14px 20px 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{font-size:12px;padding:10px 5px}.actions .primary{background:var(--text);color:var(--bg);border-color:var(--text)}.actions .copy{grid-column:1/-1;background:transparent;color:var(--muted);font-size:11px;padding:4px;border:0}footer{height:33px;flex-shrink:0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:var(--muted)}#status.error{color:var(--accent)}dialog{background:var(--raise);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:26px;width:460px;max-width:90vw}dialog::backdrop{background:#0009}dialog h2{font-size:18px;margin-bottom:20px}dialog label{display:block;margin:15px 0 8px;font-size:12px}dialog input[type=text]{width:100%;background:var(--bg)}dialog .target{font-size:11px;line-height:1.6;overflow-wrap:anywhere;padding:12px;background:var(--bg);border-radius:4px;margin-top:12px}dialog .buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}dialog .warning{color:var(--accent);font-size:12px;line-height:1.6;margin-top:12px}#dialog-error{color:var(--accent);font-size:12px;margin-top:12px}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}@media(max-height:850px){header{height:54px}.browser{padding-top:14px}.control{height:25px}.section-head{margin-bottom:10px}.preview{padding:18px}.actions{padding-top:10px;padding-bottom:12px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.badge.soft{color:var(--muted,#9B9B9E);border-color:var(--line,#303033);background:transparent}.ignored-details{white-space:pre-line}
+.column-toggle{padding:3px 7px;background:transparent;font-size:16px;flex-shrink:0}.section-head .count{margin-left:auto}.photos.collapsed,.browser.collapsed{width:44px;padding:22px 7px}.collapsed>:not(.section-head),.collapsed .count{display:none}.collapsed .section-head{flex-direction:column-reverse;gap:18px}.collapsed h2{writing-mode:vertical-rl;white-space:nowrap}.search{padding:7px 10px!important}.filters{margin-bottom:5px}.lut-row{min-height:42px}.lut-pick{padding:6px 2px}.editor-scroll{overflow:auto;min-height:0;flex:1;border-top:1px solid var(--line)}#editor{margin:0;padding:0;border:0;min-width:0}#editor:disabled{opacity:.45;pointer-events:none}.editor-heading{padding:12px 16px;display:flex;justify-content:space-between}.panel{border-top:1px solid var(--line)}.panel>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:disclosure-closed}.panel[open]>summary{list-style:disclosure-open}.panel summary .text-button{float:right;margin-top:2px}.panel-body{padding:0 16px 12px}.control{grid-template-columns:94px 1fr 48px;gap:8px;height:27px}.control[hidden]{display:none}.control label{font-size:10px}.control .badge{font-size:8px}.tabs{display:flex;gap:5px;margin-bottom:8px}.tabs button{flex:1;font-size:10px;padding:5px 7px}#curve{width:100%;height:186px;display:block;touch-action:none;cursor:crosshair}#curve circle{cursor:grab}#curve circle:focus{stroke:white;stroke-width:3}.zone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.zone h3 button{width:100%;padding:5px 2px;font-size:10px;border:1px solid transparent}.zone h3{font-size:10px;font-weight:400;margin:4px 0 8px;color:var(--muted)}.zone .control{grid-template-columns:20px 1fr 28px;gap:4px;height:23px}.zone .num{font-size:10px;padding:2px}.cube-info{max-height:100px;padding:10px 16px}.actions{padding:10px 16px;gap:6px}.actions button{padding:8px 5px}.engine-error{color:var(--accent);padding:10px 16px;font-size:11px;line-height:1.5}.recipe-note{padding:0 16px 10px;color:var(--muted);font-size:10px}.histogram{padding:8px 16px;background:#141416}.histogram canvas{display:block;width:100%;height:56px}.hist-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:4px}.clipped{color:var(--accent)!important}.wheel{width:62px;height:62px;border-radius:50%;margin:0 auto 5px;position:relative;touch-action:none;background:radial-gradient(circle,white,transparent),conic-gradient(from 90deg,#f00,#f0f,#00f,#0ff,#0f0,#ff0,#f00);cursor:crosshair}.wheel-dot{position:absolute;width:8px;height:8px;border:1.5px solid #fff;box-shadow:0 0 2px #000;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}.tat{padding:4px 8px;font-size:10px;margin-bottom:8px}.frame[data-tat=true]{cursor:ns-resize;touch-action:none}.frame[data-tat=true] .divider{pointer-events:none}
+[hidden]{display:none!important}.panel[aria-disabled=true]{opacity:.45}.frame[data-mode=side] #before{width:50%}.frame[data-mode=side] #after{left:50%;width:50%;clip-path:none}#mode-badge{font-size:10px;white-space:nowrap;color:var(--muted)}
+.raw-group h3{font-size:11px;font-weight:600;color:var(--muted);margin:12px 0 6px}.raw-group .control{padding-left:8px}.data-error{white-space:pre-line;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header><span class="mark" aria-hidden="true"></span><h1>LUT Lab</h1><span class="header-rule"></span><span class="muted tiny">사진 한 장에서 시작하는 색감</span><span class="local muted">로컬 작업실</span></header>
+<div id="data-error" class="engine-error data-error" role="alert" hidden></div>
+<main>
+<aside class="photos" id="drop-zone" aria-label="사진 선택"><div class="section-head"><h2>사진</h2><span id="photo-count" class="count mono">0</span><button class="column-toggle" data-column="drop-zone" aria-controls="drop-zone" aria-label="사진 접기" aria-expanded="true">‹</button></div><div class="photo-list" id="photos"></div><button class="upload" id="upload">＋ 사진 불러오기</button><input id="file" type="file" accept=".jpg,.jpeg,.png,.webp,.tif,.tiff,.arw,.cr3,.nef,.raf" multiple hidden><p class="drop-hint">사진을 여기에 놓아도 돼요<br>JPG · PNG · TIFF · RAW</p></aside>
+<aside class="browser" id="lut-browser" aria-label="LUT 라이브러리"><div class="section-head"><h2>LUT 라이브러리</h2><span id="lut-count" class="count mono">0</span><button class="column-toggle" data-column="lut-browser" aria-controls="lut-browser" aria-label="LUT 라이브러리 접기" aria-expanded="true">‹</button></div><input id="search" class="search" type="search" placeholder="이름으로 색감 찾기" aria-label="LUT 검색"><div class="filters"><select id="source" aria-label="출처 필터"><option value="">모든 출처</option></select><select id="category" aria-label="카테고리 필터"><option value="">모든 카테고리</option></select><button id="favorites" aria-pressed="false" aria-label="즐겨찾기만 보기" title="즐겨찾기만 보기">☆</button></div><div class="lut-list" id="luts" aria-label="LUT 목록"></div></aside>
+<section class="preview" aria-label="사진 미리보기"><div class="preview-heading"><div><h2 id="look-title">사진의 색을 찾아보세요</h2><p id="photo-title">사진과 LUT를 선택하세요</p></div><span id="mode-badge">JPG · CUBE</span><span class="render-time mono" id="render-time">준비 중</span></div><div class="stage" id="stage"><p class="empty" id="empty">사진을 선택하거나<br>왼쪽에 사진을 놓아주세요.</p><div class="frame" id="frame" data-mode="split" hidden><img id="before" alt="보정 전 사진"><img id="after" alt="LUT 적용 사진"><span class="image-label split-only">원본</span><span class="image-label right split-only">필터 적용</span><button class="divider split-only" id="divider" role="slider" aria-label="원본과 필터 비교 경계" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></button></div></div><div class="preview-tools" aria-label="비교 방식"><button data-mode="split" aria-pressed="true">나란히 비교</button><button data-mode="original" aria-pressed="false">원본</button><button data-mode="filtered" aria-pressed="false">필터 적용</button></div><div class="preview-foot"><span>경계선을 움직여 색감을 비교하세요</span><span><kbd>\</kbd> 원본 보기 · <kbd>Y</kbd> 나란히</span></div></section>
+<aside class="sidebar" aria-label="조정 및 저장">
+<div id="engine-error" class="engine-error" role="alert" hidden></div><div class="editor-scroll"><div class="histogram" id="histogram-box" hidden><div class="hist-label"><span id="shadow-clip">▲ 어두운 영역</span><span>RGB 히스토그램</span><span id="highlight-clip">밝은 영역 ▲</span></div><canvas id="histogram" width="512" height="100" aria-label="렌더링된 사진 RGB 히스토그램"></canvas></div><fieldset id="editor"><div class="editor-heading"><h2>조정</h2><button id="reset" class="text-button">모두 초기화 ↺</button></div><p class="recipe-note" id="recipe-note">필터 없음</p><div id="panels"></div></fieldset></div>
+<details class="cube-info"><summary><span>큐브 정보 ⌄</span><span id="info-summary">LUT를 선택하세요</span></summary><pre id="info"></pre><div class="ignored-details" id="ignored"></div></details>
+<div class="actions"><button class="primary" id="save">새 이름으로 저장</button><button id="install" hidden>설치 폴더로 내보내기</button><button class="copy" id="copy">CLI 명령 복사 ↗</button></div></aside>
+</main>
+<footer><span id="status" role="status" aria-live="polite">라이브러리를 불러오는 중입니다.</span><span><kbd>↑</kbd> <kbd>↓</kbd> LUT 이동 &nbsp; · &nbsp; 슬라이더 두 번 클릭으로 초기화</span></footer>
+<dialog id="save-dialog"><form id="save-form"><h2 id="dialog-title">새 이름으로 저장</h2><label for="save-name">LUT 이름</label><input id="save-name" type="text" required maxlength="180" autocomplete="off"><div class="target muted" id="target"></div><p id="install-warning" class="warning" hidden>이 파일이 설정한 설치 폴더로 내보내집니다. 아래 경로와 이름을 확인하세요.</p><label><input id="overwrite" type="checkbox"> 같은 이름의 파일 덮어쓰기</label><p id="dialog-error" role="alert"></p><div class="buttons"><button id="cancel" type="button">취소</button><button id="confirm" type="submit">저장</button></div></form></dialog>
+<script>
+const EFFECT_LABELS={'Grain':'그레인','Sharpening':'샤프닝','Clarity / texture / dehaze':'명료도·텍스처·디헤이즈','Vignette':'비네팅','Local masks':'부분 보정','Profile / Look / tables':'프로필·룩','Noise reduction':'노이즈 제거','Treatment / B&W mixer':'흑백 혼합'};
+function lostEffects(item){return (item.badges||[]).filter(b=>EFFECT_LABELS[b]).map(b=>EFFECT_LABELS[b]);}
+
+'use strict';
+const $ = id => document.getElementById(id);
+for(const button of document.querySelectorAll('.column-toggle')){
+  const column=$(button.dataset.column),label=column.querySelector('h2').textContent,key='lut-lab-'+column.id+'-collapsed';
+  function collapse(value){column.classList.toggle('collapsed',value);button.setAttribute('aria-expanded',String(!value));button.setAttribute('aria-label',label+(value?' 펼치기':' 접기'));button.textContent=value?'›':'‹';}
+  try{collapse(localStorage.getItem(key)==='true');}catch{collapse(false);}
+  button.onclick=()=>{const value=!column.classList.contains('collapsed');collapse(value);try{localStorage.setItem(key,String(value));}catch{}};
+}
+
+let photos=[], luts=[], visible=[], photo=null, selected=null, config={}, mode='split', split=50, onlyFavorites=false;
+let generation=0, timer, controller, originalCache=null, infoGeneration=0, action='save', imageSize=[1,1], currentURLs=[];
+let rawMode=false, rawSession=null, rawValues={}, rawCurves={}, rawSpecs=[], photoGeneration=0, dragging=false;
+let rawOpenQueue=Promise.resolve();
+let favorites;
+try { favorites=new Set(JSON.parse(localStorage.getItem('lut-lab-favorites') || '[]')); } catch { favorites=new Set(); }
+function message(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); }
+async function api(path, body) {
+  const response=await fetch('/api/'+path, body===undefined ? {} : {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!response.ok) { const data=await response.json(); const error=Error(typeof data.detail==='string'?data.detail:'입력값을 확인하세요.');error.status=response.status;throw error; }
+  return response.json();
+}
+function element(tag,className,text) { const node=document.createElement(tag); if(className)node.className=className; if(text!==undefined)node.textContent=text; return node; }
+function drawPhotos() {
+  $('photo-count').textContent=String(photos.length).padStart(2,'0');
+  $('photos').replaceChildren(...photos.map(item => {
+    const button=element('button','photo'); button.title=item.path; button.setAttribute('aria-pressed',String(item.path===photo?.path));
+    const image=element('img'); image.loading='lazy'; image.alt=item.name; image.src=item.thumbnail;
+    button.append(image,element('span','',item.name)); button.onclick=()=>selectPhoto(item); return button;
+  }));
+}
+
+function drawLuts() {
+  const query=$('search').value.toLocaleLowerCase();
+  visible=luts.filter(item=>(!query||item.name.toLocaleLowerCase().includes(query))&&(!$('source').value||item.source===$('source').value)&&(!$('category').value||item.category===$('category').value)&&(!onlyFavorites||favorites.has(item.path)));
+  $('lut-count').textContent=visible.length+'개';
+  const clear=element('button','lut-pick','필터 없음 · 원본'); clear.style.padding='12px 20px'; clear.onclick=()=>selectLut(null);
+  const rows=visible.map(item=>{
+    const row=element('div','lut-row'+(selected?.path===item.path?' selected':'')); row.dataset.path=item.path;
+    const button=element('button','lut-pick'); button.setAttribute('aria-current',String(selected?.path===item.path)); button.title=item.path;if(item.kind==='xmp'&&!rawMode){button.disabled=true;button.title='RAW 모드에서 사용할 수 있는 XMP 필터';}
+    const meta=element('span','lut-meta'); meta.append(element('span','',item.category));
+    const lost=lostEffects(item), approx=(item.badges||[]).some(b=>b.startsWith('B&W'));
+    if(lost.length&&!rawMode) { const badge=element('span','badge','빠진 효과 '+lost.length); badge.title=lost.join(', '); meta.append(badge); }
+    if(approx&&!rawMode) { const badge=element('span','badge soft','흑백 근사'); badge.title='RapidRAW에 흑백 변환이 없어 흑백 혼합 값으로 근사했어요'; meta.append(badge); }
+    button.append(element('span','lut-name',item.name),meta); button.onclick=()=>selectLut(item);
+    const star=element('button','star'+(favorites.has(item.path)?' saved':''),favorites.has(item.path)?'★':'☆'); star.setAttribute('aria-label',item.name+' 즐겨찾기'); star.setAttribute('aria-pressed',String(favorites.has(item.path)));
+    star.onclick=()=>{favorites.has(item.path)?favorites.delete(item.path):favorites.add(item.path);try{localStorage.setItem('lut-lab-favorites',JSON.stringify([...favorites]));}catch{message('즐겨찾기를 이 브라우저에 저장하지 못했습니다.',true);}drawLuts();};
+    row.append(button,star); return row;
+  });
+  $('luts').replaceChildren(clear,...rows);
+  if(!rows.length)$('luts').append(element('p','empty','일치하는 LUT가 없습니다.'));
+}
+async function selectLut(item) {
+  if(rawMode)return selectRawLut(item);
+  if(item?.kind==='xmp')return;
+  selected=item;loadingRecipe=true;++generation;clearTimeout(timer);controller?.abort();$('look-title').textContent=item?item.name:'원본 · 필터 없음';drawLuts();
+  tatDrag=null;draggingPoint=null;const token=++infoGeneration;$('info').textContent='';$('info-summary').textContent=item?'불러오는 중':'필터 없음';$('ignored').textContent='';
+  $('editor').disabled=true;for(const key of ['save','install','copy'])$(key).disabled=true;
+  try{
+    const saved=item?await api('recipe?'+new URLSearchParams({lut:item.path})):{version:1,adjustments:{},amount:1,mode:'none',base_lut:null,note:'필터 없음'};
+    if(token!==infoGeneration)return;
+    recipe={version:saved.version,adjustments:saved.adjustments,amount:saved.amount};baseLut=saved.base_lut;recipeMode=saved.mode;$('recipe-note').textContent=saved.note;syncControls();loadingRecipe=false;
+    enableEditor();schedule(0);
+    if(!item)return;
+    const info=await api('info?'+new URLSearchParams({lut:item.path}));if(token!==infoGeneration)return;
+    $('info-summary').textContent=info.size+'³ · 평균 거리 '+info.identity_mean_abs.toFixed(4);$('info').textContent=JSON.stringify(info,null,2);
+    const lost=lostEffects(item);$('ignored').textContent=(lost.length?'LUT에 담기지 않는 효과: '+lost.join(', '):'빠진 효과 없음')+(item.ignored.length?'\n원본 키 '+item.ignored.length+'개: '+item.ignored.join(', '):'');
+  }catch(error){if(token===infoGeneration){loadingRecipe=false;if(error.status===503)disableEditor(error.message);message(error.message,true);}}
+}
+async function refreshLuts() {
+  luts=await api('luts');
+  for(const key of ['source','category']) {
+    const previous=$(key).value; $(key).length=1;
+    for(const value of [...new Set(luts.map(item=>item[key]))].sort()) { const option=element('option','',key==='source'?(value===config.install?'설치 폴더':value.split('/').pop()):value); option.value=value; option.title=value; $(key).append(option); }
+    $(key).value=previous;
+  }
+  drawLuts();
+}
+function fitFrame() {
+  const bounds=$('stage').getBoundingClientRect(), ratio=Math.min(bounds.width/imageSize[0],bounds.height/imageSize[1]);
+  $('frame').style.width=Math.max(1,Math.floor(imageSize[0]*ratio))+'px'; $('frame').style.height=Math.max(1,Math.floor(imageSize[1]*ratio))+'px';
+}
+function schedule(delay=120) {
+  ++generation; clearTimeout(timer); controller?.abort(); $('render-time').textContent=photo?'렌더링 중':'사진을 선택하세요';
+  timer=setTimeout(()=>render(generation),delay);
+}
+async function render(token) {
+  if(!photo||loadingRecipe||!renderAvailable())return;
+  const active=new AbortController(); controller=active;
+  const size=rawMode?(dragging?1024:1600):Math.min(4096,Math.ceil(Math.max($('stage').clientWidth,$('stage').clientHeight)*devicePixelRatio));
+  const body=rawMode?{photo:photo.path,values:clone(rawValues),curves:clone(rawCurves),size,seq:token,session:rawSession}:{photo:photo.path,...cubeBody(),size};
+  const key=photo.path+'|'+(rawMode?rawSession:size);
+  const urls=[];
+  async function getImage(payload) {
+    const result=await fetch(rawMode?'/api/raw/render':'/api/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:active.signal});
+    if(!result.ok){const error=await result.json();if(result.status===503&&token===generation)disableEditor(error.detail);throw Error(error.detail||'사진을 처리하지 못했습니다.');}
+    return {blob:await result.blob(),ms:result.headers.get('X-Render-Ms')};
+  }
+  try {
+    const [original,filtered]=await Promise.all([originalCache?.key===key?Promise.resolve(originalCache):getImage(rawMode?{photo:body.photo,size:1600,original:true,session:rawSession}:{photo:body.photo,size}).then(value=>({...value,key})),getImage(body)]);
+    if(token!==generation)return;
+    originalCache=original;
+    const images=[original,filtered].map(value=>{const image=new Image();const url=URL.createObjectURL(value.blob);urls.push(url);image.src=url;return image;});
+    await Promise.all(images.map(image=>image.decode()));
+    if(token!==generation){urls.forEach(URL.revokeObjectURL);return;}
+    $('before').src=urls[0]; $('after').src=urls[1]; currentURLs.forEach(URL.revokeObjectURL); currentURLs=urls;
+    imageSize=[images[0].naturalWidth,images[0].naturalHeight]; $('frame').hidden=false; $('empty').hidden=true; fitFrame();
+    $('render-time').textContent=filtered.ms+' ms'; message('미리보기 준비 완료 · '+imageSize.join(' × ')+' px');
+    $('frame').dataset.renderedLut=selected?.path||'';if(typeof updateHistogram==='function')updateHistogram(images[1]);
+  }catch(error){urls.forEach(URL.revokeObjectURL);if(token===generation&&error.name!=='AbortError'){message(error.message,true);$('render-time').textContent='렌더링 실패';$('frame').hidden=true;$('empty').hidden=false;$('empty').textContent='사진을 처리하지 못했습니다.';}}
+}
+function setMode(value) {mode=value;$('frame').dataset.mode=value;document.querySelectorAll('[data-mode]').forEach(button=>{if(button.tagName==='BUTTON')button.setAttribute('aria-pressed',String(button.dataset.mode===value));});}
+function setSplit(value) {split=Math.max(0,Math.min(100,value));$('frame').style.setProperty('--split',split+'%');$('divider').setAttribute('aria-valuenow',String(Math.round(split)));}
+$('divider').onpointerdown=event=>{event.preventDefault();$('divider').setPointerCapture(event.pointerId);};
+$('divider').onpointermove=event=>{if($('divider').hasPointerCapture(event.pointerId)){const box=$('frame').getBoundingClientRect();setSplit((event.clientX-box.left)/box.width*100);}};
+$('divider').onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();setSplit(event.key==='Home'?0:event.key==='End'?100:split+(event.key==='ArrowLeft'?-2:2));}};
+document.querySelectorAll('button[data-mode]').forEach(button=>button.onclick=()=>setMode(button.dataset.mode));
+const basicSpecs=[['temperature','색온도'],['tint','색조'],['exposure','노출'],['contrast','대비'],['highlights','밝은 영역'],['shadows','어두운 영역'],['whites','흰색 계열'],['blacks','검정 계열'],['vibrance','생동감'],['saturation','채도']];
+const bands=['reds','oranges','yellows','greens','aquas','blues','purples','magentas'], bandLabels=['빨강','주황','노랑','녹색','아쿠아','파랑','자주','마젠타'];
+const channels=['luma','red','green','blue'], zones=['shadows','midtones','highlights','global'], zoneLabels=['어두운 영역','중간 영역','밝은 영역','전체'];
+const metrics=['hue','saturation','luminance'], metricLabels=['색조','채도','광도'];
+let recipe={version:1,adjustments:{},amount:1}, baseLut=null, recipeMode='none', channel='luma', hslTab='hue', loadingRecipe=false;
+const controls=new Map();
+const clone=value=>JSON.parse(JSON.stringify(value));
+const clamp=(value,lo,hi)=>Math.max(lo,Math.min(hi,value));
+const getValue=path=>path.startsWith('raw.')?(rawValues[path.slice(4)]??0):path.split('.').reduce((value,key)=>value?.[key],recipe) ?? (path.endsWith('.blending')?50:path==='amount'?1:0);
+function putValue(path,value){if(path.startsWith('raw.')){rawValues[path.slice(4)]=value;return;}const keys=path.split('.');let node=recipe;for(const key of keys.slice(0,-1))node=node[key]??={};node[keys.at(-1)]=value;}
+const cubeBody=()=>({lut:baseLut,mode:recipeMode,recipe:clone(recipe)});
+function disableEditor(error){if(rawMode){config.raw??={};config.raw.available=false;}else config.available=false;$('editor').disabled=true;for(const key of ['save','install','copy'])$(key).disabled=true;$('engine-error').hidden=false;$('engine-error').textContent=error;message(error,true);}
+function syncControls(){for(const control of controls.values())control.show();drawCurve();if(typeof drawWheels==='function')drawWheels();}
+function change(){syncControls();schedule();}
+function control(parent,path,label,min=-100,max=100,step=1,initial=0,scale=1){
+  const row=element('div','control'),caption=element('label','',label),slider=element('input'),field=element('input','num');
+  caption.htmlFor=path;Object.assign(slider,{type:'range',id:path,min,max,step});slider.title='두 번 클릭으로 초기화';
+  Object.assign(field,{type:'text',inputMode:'decimal',autocomplete:'off',spellcheck:false});field.setAttribute('aria-label',label+' 값 입력');
+  const show=()=>{slider.value=getValue(path);field.value=String(Math.round(getValue(path)*scale*100)/100);field.classList.remove('bad');};
+  const set=(v,delay=120)=>{putValue(path,clamp(v,min,max));syncControls();schedule(delay);};
+  const commit=()=>{const text=field.value.replace('%','').replace(',','.').trim(),v=Number(text)/scale;if(!text||!Number.isFinite(v)){field.classList.add('bad');return;}set(v,0);};
+  field.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();commit();field.select();}else if(event.key==='Escape'){show();field.blur();}else if(['ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();set(Math.round((getValue(path)+step*(event.shiftKey?10:1)*(event.key==='ArrowUp'?1:-1))/step)*step,0);field.select();}};
+  field.onblur=commit;field.onfocus=()=>field.select();field.ondblclick=()=>set(initial,0);slider.oninput=()=>set(Number(slider.value));slider.onpointerdown=()=>{dragging=true;};slider.onchange=()=>{dragging=false;schedule(0);};slider.ondblclick=()=>set(initial,0);
+  row.append(caption,slider,field);parent.append(row);controls.set(path,{show,row});show();return caption;
+}
+function panel(id,title,reset){const box=element('details','panel');box.id=id;box.open=id==='basic';const summary=element('summary','',title),button=element('button','text-button','초기화 ↺');button.type='button';button.onclick=event=>{event.preventDefault();reset();syncControls();schedule(0);};summary.append(button);const body=element('div','panel-body');box.append(summary,body);$('panels').append(box);return body;}
+function tabs(parent,labels,values,active,choose){const bar=element('div','tabs');values.forEach((value,i)=>{const button=element('button','',labels[i]);button.type='button';button.setAttribute('aria-pressed',String(value===active));button.onclick=()=>{for(const sibling of bar.children)sibling.setAttribute('aria-pressed',String(sibling===button));choose(value);};bar.append(button);});parent.append(bar);return bar;}
+const basic=panel('basic','기본',()=>basicSpecs.forEach(([key])=>delete recipe.adjustments[key]));
+for(const [key,label] of basicSpecs){const caption=control(basic,'adjustments.'+key,label,key==='exposure'?-5:-100,key==='exposure'?5:100,key==='exposure'?.01:1);if(['highlights','shadows'].includes(key)){const badge=element('span','badge',' 근사');badge.title='RapidRAW는 큐브를 만들 때 주변 픽셀을 샘플링하므로 사진별 효과는 근사입니다.';caption.append(badge);}}
+const curvePanel=panel('tone-curve','톤 곡선',()=>delete recipe.adjustments.curves);
+tabs(curvePanel,['RGB','빨강','녹색','파랑'],channels,channel,value=>{channel=value;drawCurve();});
+const svgNS='http://www.w3.org/2000/svg';
+function svg(tag,attributes){const node=document.createElementNS(svgNS,tag);for(const [key,value]of Object.entries(attributes))node.setAttribute(key,value);return node;}
+const curve=svg('svg',{id:'curve',viewBox:'-8 -8 271 271',tabindex:'0',role:'group','aria-label':'포인트 곡선. 클릭 추가, 드래그 이동, 두 번 클릭 삭제'});curvePanel.append(curve);
+const curveHint=element('p','muted tiny','클릭 추가 · 드래그 이동 · 두 번 클릭 삭제 (최대 16점)');curvePanel.append(curveHint);
+function curvePoints(){return (rawMode?rawCurves:recipe.adjustments.curves)?.[channel]||[{x:0,y:0},{x:255,y:255}];}
+function savePoints(points){if(rawMode){rawCurves[channel]=points;return;}recipe.adjustments.curves??={};recipe.adjustments.curves[channel]=points;recipe.adjustments.curveMode='point';}
+// Independent Hermite evaluator: secant averages, monotonicity limiter, constant tails.
+function curveValues(points){
+  const slopes=points.slice(1).map((point,i)=>(point.y-points[i].y)/(point.x-points[i].x));
+  const tangent=points.map((_,i)=>i===0?slopes[0]:i===points.length-1?slopes.at(-1):slopes[i-1]*slopes[i]<=0?0:(slopes[i-1]+slopes[i])/2);
+  slopes.forEach((slope,i)=>{if(slope===0){tangent[i]=tangent[i+1]=0;}else{const norm=Math.hypot(tangent[i]/slope,tangent[i+1]/slope);if(norm>3){tangent[i]*=3/norm;tangent[i+1]*=3/norm;}}});
+  return Array.from({length:256},(_,x)=>{if(x<=points[0].x)return points[0].y;if(x>=points.at(-1).x)return points.at(-1).y;const i=points.findIndex(point=>point.x>x)-1,a=points[i],b=points[i+1],width=b.x-a.x,t=(x-a.x)/width;
+    return (2*t**3-3*t*t+1)*a.y+(t**3-2*t*t+t)*width*tangent[i]+(-2*t**3+3*t*t)*b.y+(t**3-t*t)*width*tangent[i+1];});
+}
+function drawCurve(){
+  const points=curvePoints(),color={luma:'#eee',red:'#ef7373',green:'#82cfa3',blue:'#78aafa'}[channel];
+  curve.replaceChildren(svg('rect',{width:255,height:255,fill:'#111113'}));
+  for(const position of [0,64,128,192,255])curve.append(svg('path',{d:`M${position} 0V255 M0 ${position}H255`,stroke:'#333',fill:'none','stroke-width':.6}));
+  curve.append(svg('path',{d:'M0 255L255 0',stroke:'#666','stroke-dasharray':'3 4'}));
+  curve.append(svg('path',{d:curveValues(points).map((y,x)=>(x?'L':'M')+x+' '+(255-y)).join(' '),stroke:color,fill:'none','stroke-width':2}));
+  points.forEach((point,i)=>{const dot=svg('circle',{cx:point.x,cy:255-point.y,r:5,fill:color,stroke:'#111','data-point':i,tabindex:0,role:'button','aria-label':`점 ${i+1}: ${point.x}, ${point.y}`});
+    dot.onkeydown=event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Delete','Backspace'].includes(event.key))return;event.preventDefault();event.stopPropagation();const edited=clone(curvePoints());if(['Delete','Backspace'].includes(event.key)){if(edited.length>2)edited.splice(i,1);}else{edited[i].x=clamp(edited[i].x+(event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0),i?edited[i-1].x+1:0,i<edited.length-1?edited[i+1].x-1:255);edited[i].y=clamp(edited[i].y+(event.key==='ArrowUp'?1:event.key==='ArrowDown'?-1:0),0,255);}savePoints(edited);change();curve.querySelector(`[data-point="${Math.min(i,edited.length-1)}"]`)?.focus();};curve.append(dot);});
+}
+function curvePosition(event){const point=curve.createSVGPoint();point.x=event.clientX;point.y=event.clientY;const local=point.matrixTransform(curve.getScreenCTM().inverse());return {x:clamp(Math.round(local.x),0,255),y:clamp(Math.round(255-local.y),0,255)};}
+let draggingPoint=null;
+curve.onpointerdown=event=>{if($('editor').disabled)return;event.preventDefault();const points=clone(curvePoints()),position=curvePosition(event);let index=event.target.dataset.point===undefined?-1:Number(event.target.dataset.point);
+  if(index<0){if(event.detail>1||points.length>=16)return;index=points.findIndex(p=>p.x===position.x);if(index<0){points.push(position);points.sort((a,b)=>a.x-b.x);index=points.findIndex(p=>p.x===position.x);savePoints(points);change();}}
+  dragging=true;draggingPoint=index;curve.setPointerCapture(event.pointerId);
+};
+curve.onpointermove=event=>{if(draggingPoint===null||!curve.hasPointerCapture(event.pointerId))return;const points=clone(curvePoints()),position=curvePosition(event),i=draggingPoint;position.x=clamp(position.x,i?points[i-1].x+1:0,i<points.length-1?points[i+1].x-1:255);points[i]=position;savePoints(points);change();};
+curve.onpointerup=curve.onpointercancel=()=>{draggingPoint=null;dragging=false;schedule(0);};
+curve.ondblclick=event=>{if($('editor').disabled)return;const index=event.target.dataset.point;if(index===undefined)return;const points=clone(curvePoints());if(points.length>2){points.splice(Number(index),1);savePoints(points);change();}};
+const hsl=panel('hsl','혼합 (HSL)',()=>delete recipe.adjustments.hsl);
+tabs(hsl,metricLabels,metrics,hslTab,value=>{hslTab=value;for(const [key,control]of controls)if(key.startsWith('adjustments.hsl.'))control.row.hidden=!key.endsWith('.'+value);});
+for(const metric of metrics)bands.forEach((band,i)=>{control(hsl,`adjustments.hsl.${band}.${metric}`,bandLabels[i]);controls.get(`adjustments.hsl.${band}.${metric}`).row.hidden=metric!==hslTab;});
+const grading=panel('grading','색상 그레이딩',()=>delete recipe.adjustments.colorGrading),zoneGrid=element('div','zone-grid');grading.append(zoneGrid);
+for(const [i,zone]of zones.entries()){const card=element('div','zone');card.dataset.zone=zone;card.append(element('h3','',zoneLabels[i]));zoneGrid.append(card);for(const [j,metric]of metrics.entries())control(card,`adjustments.colorGrading.${zone}.${metric}`,metricLabels[j],metric==='luminance'?-100:0,metric==='hue'?360:100);}
+control(grading,'adjustments.colorGrading.blending','혼합',0,100,1,50);control(grading,'adjustments.colorGrading.balance','균형');
+const calibration=panel('calibration','보정',()=>delete recipe.adjustments.colorCalibration);
+control(calibration,'adjustments.colorCalibration.shadowsTint','어두운 영역 색조');
+for(const [i,key]of ['red','green','blue'].entries())for(const [suffix,label]of [['Hue','색조'],['Saturation','채도']])control(calibration,'adjustments.colorCalibration.'+key+suffix,['빨강','녹색','파랑'][i]+' 원색 '+label);
+const amount=panel('amount-panel','양 (Amount)',()=>{recipe.amount=1;});amount.parentElement.open=true;control(amount,'amount','양',0,2,.01,1,100);
+$('reset').onclick=()=>{if(rawMode){selectRawLut(null);return;}recipe={version:1,adjustments:{},amount:1};syncControls();schedule(0);};
+drawCurve();
+
+let activeZone='shadows';
+const zoneSliders=element('div','zone-sliders');zoneGrid.after(zoneSliders);
+function selectZone(zone){activeZone=zone;for(const z of zones){document.querySelector(`.zone[data-zone="${z}"] button`).setAttribute('aria-pressed',String(z===zone));for(const metric of ['hue','saturation'])controls.get(`adjustments.colorGrading.${z}.${metric}`).row.hidden=z!==zone;}}
+for(const zone of zones){const card=document.querySelector(`.zone[data-zone="${zone}"]`),heading=card.querySelector('h3'),button=element('button','text-button',heading.textContent);button.onclick=()=>selectZone(zone);heading.replaceChildren(button);for(const metric of ['hue','saturation'])zoneSliders.append(controls.get(`adjustments.colorGrading.${zone}.${metric}`).row);}
+selectZone(activeZone);
+function drawWheels(){for(const wheel of document.querySelectorAll('[data-raw-zone]')){const zone=wheel.dataset.rawZone,hue=rawValues[`grading.${zone}.hue`]*Math.PI/180,sat=rawValues[`grading.${zone}.sat`];wheel.firstChild.style.left=(50+Math.cos(hue)*sat/2)+'%';wheel.firstChild.style.top=(50-Math.sin(hue)*sat/2)+'%';}for(const zone of zones){const wheel=document.querySelector(`.wheel[data-zone="${zone}"]`);if(!wheel)continue;const hue=getValue(`adjustments.colorGrading.${zone}.hue`)*Math.PI/180,sat=getValue(`adjustments.colorGrading.${zone}.saturation`);wheel.firstChild.style.left=(50+Math.cos(hue)*sat/2)+'%';wheel.firstChild.style.top=(50-Math.sin(hue)*sat/2)+'%';}}
+for(const zone of zones){
+  const card=document.querySelector(`.zone[data-zone="${zone}"]`),wheel=element('div','wheel');wheel.dataset.zone=zone;wheel.setAttribute('aria-label',zoneLabels[zones.indexOf(zone)]+' 색조·채도 휠');wheel.title='드래그: 색조·채도 · Shift: 채도만 · 두 번 클릭: 초기화';wheel.append(element('span','wheel-dot'));card.insertBefore(wheel,card.children[1]);let heldHue=0;
+  function move(event){if(!wheel.hasPointerCapture(event.pointerId))return;const rect=wheel.getBoundingClientRect(),x=(event.clientX-rect.left-rect.width/2)/(rect.width/2),y=(event.clientY-rect.top-rect.height/2)/(rect.height/2);
+    putValue(`adjustments.colorGrading.${zone}.hue`,event.shiftKey?heldHue:Math.round((Math.atan2(-y,x)*180/Math.PI+360)%360));putValue(`adjustments.colorGrading.${zone}.saturation`,Math.round(Math.min(1,Math.hypot(x,y))*100));change();}
+  wheel.onpointerdown=event=>{if($('editor').disabled)return;event.preventDefault();selectZone(zone);heldHue=getValue(`adjustments.colorGrading.${zone}.hue`);wheel.setPointerCapture(event.pointerId);move(event);};wheel.onpointermove=move;
+  wheel.ondblclick=()=>{if($('editor').disabled)return;if(recipe.adjustments.colorGrading)delete recipe.adjustments.colorGrading[zone];change();};
+}
+drawWheels();
+const sampleCanvas=document.createElement('canvas');sampleCanvas.width=sampleCanvas.height=1;
+const sampleContext=sampleCanvas.getContext('2d',{willReadFrequently:true});
+function displayedPixel(event){const rect=$('frame').getBoundingClientRect(),x=clamp((event.clientX-rect.left)/rect.width,0,.999999),y=clamp((event.clientY-rect.top)/rect.height,0,.999999),original=mode==='original'||(mode==='split'&&x<split/100)||(mode==='side'&&x<.5),image=$(original?'before':'after');if(!image.complete||!image.naturalWidth)return null;sampleContext.clearRect(0,0,1,1);sampleContext.drawImage(image,-Math.floor((mode==='side'?(x%0.5)*2:x)*rect.width),-Math.floor(y*rect.height),rect.width,rect.height);return [...sampleContext.getImageData(0,0,1,1).data].slice(0,3);}
+function pixelHue(rgb){const high=Math.max(...rgb),low=Math.min(...rgb),span=high-low;if(span===0)return null;const [r,g,b]=rgb;return ((high===r?(g-b)/span:high===g?2+(b-r)/span:4+(r-g)/span)*60+360)%360;}
+function bandWeights(hue){const centers=[358,25,60,115,180,225,280,330],nearest=centers.map((center,i)=>({i,d:Math.min(Math.abs(hue-center),360-Math.abs(hue-center))})).sort((a,b)=>a.d-b.d).slice(0,2),total=nearest[0].d+nearest[1].d;return nearest.map((item,i)=>[bands[item.i],nearest[1-i].d/total]);}
+let tat=null,tatDrag=null;
+const tatButtons={};
+function setTat(value){tat=value;$('frame').dataset.tat=String(Boolean(tat));for(const [key,button]of Object.entries(tatButtons))button.setAttribute('aria-pressed',String(key===tat));}
+for(const [key,parent]of [['hsl',hsl],['curve',curvePanel]]){const button=element('button','tat','◎ 대상 조정');button.setAttribute('aria-pressed','false');button.title='켜고 사진에서 위아래로 드래그하세요';button.onclick=()=>setTat(tat===key?null:key);parent.prepend(button);tatButtons[key]=button;}
+$('frame').addEventListener('pointerdown',event=>{if(!tat||$('editor').disabled||loadingRecipe)return;const rgb=displayedPixel(event);if(!rgb)return;event.preventDefault();$('frame').setPointerCapture(event.pointerId);
+  if(tat==='hsl'){const hue=pixelHue(rgb);if(hue===null){message('무채색에는 색조 대상 조정을 적용할 수 없습니다.');return;}tatDrag={kind:tat,y:event.clientY,metric:hslTab,values:bandWeights(hue).map(([band,weight])=>({path:`adjustments.hsl.${band}.${hslTab}`,weight,value:getValue(`adjustments.hsl.${band}.${hslTab}`)}))};}
+  else{const points=clone(curvePoints()),x=Math.round(rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722);let index=points.findIndex(point=>point.x===x);if(index<0){if(points.length>=16){message('곡선은 최대 16점입니다. 점을 삭제한 뒤 다시 조정하세요.');return;}points.push({x,y:Math.round(curveValues(points)[x])});points.sort((a,b)=>a.x-b.x);index=points.findIndex(point=>point.x===x);}savePoints(points);tatDrag={kind:tat,y:event.clientY,index,value:points[index].y,channel};change();}
+});
+$('frame').addEventListener('pointermove',event=>{if(!tatDrag||!$('frame').hasPointerCapture(event.pointerId))return;const delta=(tatDrag.y-event.clientY)/2;if(tatDrag.kind==='hsl'){for(const item of tatDrag.values)putValue(item.path,Math.round(clamp(item.value+delta*item.weight,-100,100)*100)/100);}else{recipe.adjustments.curves[tatDrag.channel][tatDrag.index].y=Math.round(clamp(tatDrag.value+delta,0,255));}change();});
+$('frame').addEventListener('pointerup',()=>{tatDrag=null;});$('frame').addEventListener('pointercancel',()=>{tatDrag=null;});
+function updateHistogram(image){
+  const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0);const pixels=context.getImageData(0,0,canvas.width,canvas.height).data,bins=Array.from({length:3},()=>new Uint32Array(256));let shadows=0,highlights=0;
+  for(let i=0;i<pixels.length;i+=4){for(let c=0;c<3;c++)bins[c][pixels[i+c]]++;if(Math.min(pixels[i],pixels[i+1],pixels[i+2])===0)shadows++;if(Math.max(pixels[i],pixels[i+1],pixels[i+2])===255)highlights++;}
+  const chart=$('histogram'),ctx=chart.getContext('2d'),max=Math.max(...bins.flatMap(channel=>[...channel]));ctx.clearRect(0,0,chart.width,chart.height);ctx.globalCompositeOperation='screen';
+  for(let c=0;c<3;c++){ctx.fillStyle=['#d85b5b99','#5dc88699','#5c8fdf99'][c];ctx.beginPath();ctx.moveTo(0,chart.height);for(let i=0;i<256;i++)ctx.lineTo(i/255*chart.width,chart.height-(max?bins[c][i]/max:0)*(chart.height-3));ctx.lineTo(chart.width,chart.height);ctx.closePath();ctx.fill();}
+  for(const [id,count]of [['shadow-clip',shadows],['highlight-clip',highlights]]){$(id).classList.toggle('clipped',count>0);$(id).title=`채널 클리핑: ${count.toLocaleString()} 픽셀 (${(count/(pixels.length/4)*100).toFixed(2)}%)`;$(id).setAttribute('aria-label',$(id).textContent+' '+$(id).title);}
+  $('histogram-box').hidden=false;
+}
+
+$('search').oninput=drawLuts;$('source').onchange=drawLuts;$('category').onchange=drawLuts;
+$('favorites').onclick=()=>{onlyFavorites=!onlyFavorites;$('favorites').setAttribute('aria-pressed',String(onlyFavorites));$('favorites').textContent=onlyFavorites?'★':'☆';drawLuts();};
+document.addEventListener('keydown',event=>{
+  if($('save-dialog').open||event.ctrlKey||event.metaKey||event.altKey||event.target.closest('input,select,textarea,[contenteditable=true]'))return;
+  if(event.key.toLowerCase()==='y'){event.preventDefault();setMode(mode==='side'?'split':'side');return;}
+  if(event.key==='\\'){event.preventDefault();if(!event.repeat){heldMode=mode;setMode('original');}return;}
+  if((event.code==='Space')&&(event.target.tagName!=='BUTTON'||event.target.closest('.lut-pick,.photo,[data-mode]'))){event.preventDefault();setMode(mode==='original'?'filtered':'original');}
+  if(['ArrowUp','ArrowDown'].includes(event.key)&&visible.length){event.preventDefault();const choices=rawMode?visible:visible.filter(item=>item.kind!=='xmp');if(!choices.length)return;const index=choices.findIndex(item=>item.path===selected?.path);const next=index<0?(event.key==='ArrowDown'?0:choices.length-1):(index+(event.key==='ArrowDown'?1:-1)+choices.length)%choices.length;selectLut(choices[next]);document.querySelector('.lut-row.selected')?.scrollIntoView({block:'nearest'});}
+});
+async function upload(files) {
+  $('upload').disabled=true;
+  try {
+    let last;
+    for(const file of files) {message(file.name+' 업로드 중');const response=await fetch('/api/upload?'+new URLSearchParams({name:file.name}),{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});const result=await response.json();if(!response.ok)throw Error(result.detail);last=result.path;}
+    photos=await api('photos');drawPhotos();if(last)selectPhoto(photos.find(item=>item.path===last));
+  }catch(error){message(error.message,true);}finally{$('upload').disabled=false;$('file').value='';}
+}
+$('upload').onclick=()=>$('file').click();$('file').onchange=()=>upload([...$('file').files]);
+const drop=$('drop-zone');drop.ondragover=event=>{event.preventDefault();drop.classList.add('dragover');};drop.ondragleave=()=>drop.classList.remove('dragover');drop.ondrop=event=>{event.preventDefault();drop.classList.remove('dragover');upload([...event.dataTransfer.files]);};
+window.addEventListener('dragover',event=>event.preventDefault());window.addEventListener('drop',event=>event.preventDefault());
+function defaultName(){return (selected?.name||'나의 색감')+' custom';}
+function updateTarget(){const name=$('save-name').value,ext=rawMode?'.xmp':'.cube';$('target').textContent=(action==='save'?config.custom:config.install)+'/'+name+(name.toLowerCase().endsWith(ext)?'':ext);}
+function openSave(kind) {if(kind==='install'&&!config.install)return;action=kind;$('dialog-title').textContent=kind==='save'?'새 이름으로 저장':'설치 폴더로 내보내기';$('confirm').textContent=kind==='save'?'저장':'내보내기';$('save-name').value=defaultName();$('overwrite').checked=false;$('dialog-error').textContent='';$('install-warning').hidden=kind!=='install';updateTarget();$('save-dialog').showModal();$('save-name').focus();$('save-name').select();}
+$('save').onclick=()=>openSave('save');$('install').onclick=()=>openSave('install');$('cancel').onclick=()=>$('save-dialog').close();$('save-name').oninput=updateTarget;
+$('save-form').onsubmit=async event=>{
+  event.preventDefault();$('confirm').disabled=true;
+  try {if(rawMode){clearTimeout(timer);controller?.abort();const response=await fetch('/api/raw/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({photo:photo.path,session:rawSession,values:clone(rawValues),curves:clone(rawCurves),size:1024,seq:++generation})});if(!response.ok)throw Error((await response.json()).detail);}
+    const result=await api(rawMode?(action==='save'?'raw/export':'raw/install'):action,{...(rawMode?{session:rawSession}:cubeBody()),name:$('save-name').value,overwrite:$('overwrite').checked});$('save-dialog').close();message((action==='save'?'저장 완료: ':'내보내기 완료: ')+result.path);await refreshLuts();}
+  catch(error){$('dialog-error').textContent=error.message;}finally{$('confirm').disabled=false;}
+};
+async function copyText(text){
+  if(navigator.clipboard?.writeText){try{await navigator.clipboard.writeText(text);return;}catch{}}
+  const field=document.createElement('textarea'),focused=document.activeElement;
+  field.value=text;field.setAttribute('aria-label','복사할 CLI 명령');field.style.cssText='position:fixed;left:-9999px;top:0';document.body.append(field);
+  try{field.focus();field.select();if(!document.execCommand('copy'))throw Error('명령을 복사하지 못했습니다. 클립보드 권한을 확인하세요.');}
+  finally{field.remove();focused?.focus();}
+}
+$('copy').onclick=async()=>{try{const result=await api('command',{...cubeBody(),name:$('save-name').value||defaultName()});await copyText(result.command);message('CLI 명령을 복사했습니다.');}catch(error){message(error.message,true);}};
+new ResizeObserver(()=>{fitFrame();schedule();}).observe($('stage'));
+
+const engineAvailable=()=>rawMode?config.raw?.available:config.available;
+const renderAvailable=()=>!rawMode||config.raw?.available;
+function enableEditor(){
+  const available=engineAvailable();$('editor').disabled=rawMode&&!available;
+  for(const key of ['save','install','copy'])$(key).disabled=!renderAvailable();
+  $('install').hidden=!config.install;
+  for(const panel of document.querySelectorAll('#panels>details')){
+    const disabled=!rawMode&&!available&&panel.id!=='amount-panel';
+    for(const input of panel.querySelectorAll('input,button,select'))input.disabled=disabled;
+    panel.inert=disabled;
+    if(!rawMode&&!['effects','detail'].includes(panel.id))panel.setAttribute('aria-disabled',String(disabled));
+  }
+  $('engine-error').hidden=Boolean(available);
+  if(!available)$('engine-error').textContent=rawMode?(config.raw?.error||'엔진을 사용할 수 없습니다.'):'보정 엔진(rr-lut) 없음';
+}
+function readRaw(result){rawSession=result.session;rawSpecs=result.controls;rawValues=Object.fromEntries(rawSpecs.map(spec=>[spec.id,spec.value]));rawCurves={};for(const ch of channels){const points=result.settings.curve?.[ch==='luma'?'master':ch];if(points?.length)rawCurves[ch]=points.map(p=>({x:Math.round((p.x??p[0])*255),y:Math.round((p.y??p[1])*255)}));}syncControls();}
+async function selectPhoto(item){
+  if(!item)return;
+  const token=++photoGeneration;++infoGeneration;++generation;clearTimeout(timer);controller?.abort();loadingRecipe=true;
+  const wasRaw=rawMode;photo=item;rawMode=item.kind==='raw';originalCache=null;rawSession=null;setTat(null);if(rawMode||wasRaw){selected=null;$('look-title').textContent='원본 · 필터 없음';$('info').textContent='';$('ignored').textContent='';$('info-summary').textContent='필터 없음';}drawLuts();
+  $('photo-title').textContent=item.name;$('mode-badge').textContent=rawMode?'RAW · XMP':'JPG · CUBE';$('mode-badge').title=rawMode?'RAW 모드':'JPG 모드';
+  $('copy').hidden=rawMode;$('save').textContent='새 이름으로 저장'+(rawMode?' .xmp':'');$('install').textContent='설치 폴더로 내보내기'+(rawMode?' .xmp':'');
+  $('frame').hidden=true;$('editor').disabled=true;for(const key of ['save','install','copy'])$(key).disabled=true;
+  document.querySelectorAll('.photo').forEach(button=>button.setAttribute('aria-pressed',String(button.title===item.path)));
+  try{
+    if(rawMode){const result=await (rawOpenQueue=rawOpenQueue.catch(()=>{}).then(()=>api('raw/open',{photo:item.path})));if(token!==photoGeneration)return;readRaw(result);buildRawPanels();config.raw.available=true;}
+    else{showJpgPanels();if(wasRaw){recipe={version:1,adjustments:{},amount:1};baseLut=null;recipeMode='none';}syncControls();}
+    if(token!==photoGeneration)return;loadingRecipe=false;enableEditor();if(rawMode||wasRaw)$('recipe-note').textContent=rawMode?'RAW 모드 · LightCraft · 공간 효과 포함':'필터 없음';schedule(0);
+  }catch(error){if(token===photoGeneration){loadingRecipe=false;if(error.status===503)disableEditor(error.message);message(error.message,true);}}
+}
+async function selectRawLut(item){
+  if(loadingRecipe||!rawSession)return;
+  const token=++infoGeneration;loadingRecipe=true;++generation;clearTimeout(timer);controller?.abort();enableEditor();$('editor').disabled=true;for(const id of ['save','install'])$(id).disabled=true;
+  try{const result=await api(item?'raw/preset':'raw/reset',{session:rawSession,...(item?{lut:item.path}:{})});if(token!==infoGeneration)return;readRaw(result);selected=item;drawLuts();$('look-title').textContent=item?.name||'원본 · 필터 없음';$('recipe-note').textContent=result.unmapped?.length?'가져오지 못한 설정: '+result.unmapped.join(', '):result.kind==='profile'?'큐브를 크리에이티브 프로필로 적용했습니다.':'RAW 현상 설정을 적용했습니다.';$('info-summary').textContent=result.kind==='profile'?'큐브 프로필 · 강도 조절':'LightCraft XMP';$('ignored').textContent=result.unmapped?.join(', ')||'';loadingRecipe=false;enableEditor();schedule(0);}
+  catch(error){if(token===infoGeneration){loadingRecipe=false;if(error.status===503)disableEditor(error.message);else enableEditor();message(error.message,true);}}
+}
+const RAW_LABELS={'wb.temp':'색온도','wb.tint':'색조','effects.texture':'텍스처','effects.clarity':'명료도','effects.dehaze':'안개 제거','profile.amount':'프로필 강도','curve.lights':'밝은 톤','curve.darks':'어두운 톤','curve.splitShadows':'어두운 분할','curve.splitMid':'중간 분할','curve.splitHighlights':'밝은 분할','curve.refineSaturation':'채도 보존','grading.blending':'혼합','grading.balance':'균형','vignette.amount':'양','vignette.midpoint':'중간점','vignette.roundness':'원형률','vignette.feather':'페더','vignette.highlights':'밝은 영역','grain.amount':'양','grain.size':'크기','grain.roughness':'거칠기','detail.sharpenAmount':'양','detail.sharpenRadius':'반경','detail.sharpenDetail':'세부 묘사','detail.sharpenMasking':'마스킹','detail.nrLuminance':'휘도','detail.nrDetail':'세부','detail.nrContrast':'대비','detail.nrColor':'색상','detail.nrColorDetail':'색상 세부','detail.nrColorSmoothness':'매끄러움'};
+function rawLabel(spec){if(RAW_LABELS[spec.id])return RAW_LABELS[spec.id];const [group,key,metric]=spec.id.split('.');if(['light','color','curve'].includes(group))return basicSpecs.find(x=>x[0]===key)?.[1]||spec.label;if(group==='mixer')return bandLabels[['red','orange','yellow','green','aqua','blue','purple','magenta'].indexOf(key)]+' '+metricLabels[['hue','sat','lum'].indexOf(metric)];if(group==='grading'&&metric)return zoneLabels[zones.indexOf(key)]+' '+metricLabels[['hue','sat','lum'].indexOf(metric)];return spec.label;}
+let jpgPanels;
+function showJpgPanels(){curvePanel.insertBefore(curve,curveHint);document.querySelectorAll('[data-raw-panel]').forEach(n=>n.remove());for(const key of [...controls.keys()])if(key.startsWith('raw.'))controls.delete(key);if(jpgPanels)jpgPanels.forEach(n=>n.hidden=false);}
+function buildRawPanels(){
+  showJpgPanels();jpgPanels??=[...$('panels').children];jpgPanels.forEach(n=>n.hidden=true);
+  for(const [id,title,prefixes]of [['basic','기본',['wb.','light.','color.']],['curve','톤 곡선',['curve.']],['mixer','컬러 믹서',['mixer.']],['grading','컬러 그레이딩',['grading.']],['effects','효과',['effects.','vignette.','grain.']],['detail','디테일',['detail.']],['calibration','보정',['calibration.']],['profile','프로필 강도',['profile.amount']]]){
+    const specs=rawSpecs.filter(s=>prefixes.some(p=>s.id.startsWith(p)));
+    if(id==='effects'||id==='detail')specs.sort((a,b)=>Object.keys(RAW_LABELS).indexOf(a.id)-Object.keys(RAW_LABELS).indexOf(b.id));
+    const body=panel('raw-'+id,title,()=>{for(const spec of specs)rawValues[spec.id]=spec.default;if(id==='curve')rawCurves=Object.fromEntries(channels.map(c=>[c,[{x:0,y:0},{x:255,y:255}]]));});body.parentElement.dataset.rawPanel='true';body.parentElement.open=id==='basic';
+    if(id==='curve'){tabs(body,['RGB','빨강','녹색','파랑'],channels,channel,v=>{channel=v;drawCurve();});body.append(curve);body.append(element('p','muted tiny','클릭 추가 · 드래그 이동 · 두 번 클릭 삭제'));}
+    if(id==='mixer')tabs(body,metricLabels,['hue','sat','lum'],'hue',value=>{for(const spec of specs)controls.get('raw.'+spec.id).row.hidden=!spec.id.endsWith('.'+value);});
+    const groups=id==='effects'?[['effects.','효과'],['vignette.','비네팅'],['grain.','그레인']]:id==='detail'?[['detail.sharpen','선명하게'],['detail.nr','노이즈 감소']]:[];
+    const targets=new Map(groups.map(([prefix,label])=>{const group=element('section','raw-group');group.append(element('h3','',label));body.append(group);return [prefix,group];}));
+    for(const spec of specs){const target=[...targets].find(([prefix])=>spec.id.startsWith(prefix))?.[1]||body;control(target,'raw.'+spec.id,rawLabel(spec),spec.min,spec.max,spec.step,spec.default);if(id==='mixer')controls.get('raw.'+spec.id).row.hidden=!spec.id.endsWith('.hue');}
+    if(id==='grading'){
+      const grid=element('div','zone-grid');body.prepend(grid);
+      for(const zone of zones){const card=element('div','zone');card.append(element('h3','',zoneLabels[zones.indexOf(zone)]));const wheel=element('div','wheel');wheel.dataset.rawZone=zone;wheel.append(element('span','wheel-dot'));wheel.title='드래그: 색조·채도 · Shift: 채도만 · 두 번 클릭: 초기화';card.append(wheel);grid.append(card);let heldHue=0;
+        const move=event=>{if(!wheel.hasPointerCapture(event.pointerId))return;const r=wheel.getBoundingClientRect(),x=(event.clientX-r.left-r.width/2)/(r.width/2),y=(event.clientY-r.top-r.height/2)/(r.height/2);rawValues[`grading.${zone}.hue`]=event.shiftKey?heldHue:Math.round((Math.atan2(-y,x)*180/Math.PI+360)%360);rawValues[`grading.${zone}.sat`]=Math.round(Math.min(1,Math.hypot(x,y))*100);change();};
+        wheel.onpointerdown=event=>{if($('editor').disabled)return;heldHue=rawValues[`grading.${zone}.hue`];dragging=true;wheel.setPointerCapture(event.pointerId);move(event);};wheel.onpointermove=move;wheel.ondblclick=()=>{rawValues[`grading.${zone}.hue`]=rawValues[`grading.${zone}.sat`]=0;change();};
+      }
+    }
+  }
+  syncControls();
+}
+
+let heldMode=null;document.addEventListener('keyup',event=>{if(event.key==='\\'&&heldMode!==null){setMode(heldMode);heldMode=null;}});window.addEventListener('blur',()=>{if(heldMode!==null){setMode(heldMode);heldMode=null;}});
+document.addEventListener('pointerup',()=>{if(dragging){dragging=false;schedule(0);}});document.addEventListener('pointercancel',()=>{if(dragging){dragging=false;schedule(0);}});
+for(const [id,title]of [['effects','효과'],['detail','디테일']]){const body=panel(id,title,()=>{}),box=body.parentElement;box.setAttribute('aria-disabled','true');box.open=false;const summary=box.querySelector('summary');summary.querySelector('button').remove();summary.append(element('p','muted tiny','RAW 전용 (공간 연산은 큐브에 담을 수 없음)'));summary.onclick=event=>event.preventDefault();$('calibration').before(box);}
+(async()=>{try{config=await api('config');enableEditor();$('data-error').hidden=!config.data_errors?.length;$('data-error').textContent=(config.data_errors||[]).join('\n');[photos]=await Promise.all([api('photos'),refreshLuts()]);drawPhotos();if(photos.length)selectPhoto(photos[0]);else message('사진을 불러와 시작하세요.');}catch(error){message(error.message,true);}})();
+</script>
+</body>
+</html>
